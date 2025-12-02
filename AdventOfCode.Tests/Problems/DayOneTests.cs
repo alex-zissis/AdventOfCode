@@ -2,7 +2,7 @@
 
 namespace AdventOfCode.Tests.Problems;
 
-public class UnitTest1
+public class DayOneTests
 {
     private readonly DayOne _solver = new();
 
