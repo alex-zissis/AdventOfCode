@@ -43,7 +43,7 @@ public sealed class DayThreeTests
     {
         DayThree.Bank[] banks = DayThree.ParseBanks(line);
 
-        long result = DayThree.GetLargetNDigitNumber(banks, banks, [], 12);
+        long result = DayThree.GetLargetNDigitNumber(banks, 0, [], 12);
 
         Assert.Equal(expected, result);
     }

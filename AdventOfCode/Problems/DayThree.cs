@@ -29,18 +29,18 @@ public sealed class DayThree : Problem<long>
 
             Bank[] banks = ParseBanks(line);
             
-            power += GetLargetNDigitNumber(banks, banks, [], n);
+            power += GetLargetNDigitNumber(banks, 0, [], n);
         }
 
         return power;
     }
 
-    internal static long GetLargetNDigitNumber(Bank[] banks, Bank[] remainingBanks, List<Bank> selectedBanks, int n)
+    internal static long GetLargetNDigitNumber(Bank[] banks, int startIndex, List<Bank> selectedBanks, int n)
     {
         if (n == 0)
         {
             var sb = new StringBuilder();
-            foreach (var bank in selectedBanks.OrderBy(b => b.Index))
+            foreach (var bank in selectedBanks)
             {
                 sb.Append(bank.Power);
             }
@@ -49,28 +49,30 @@ public sealed class DayThree : Problem<long>
             return long.Parse(sb.ToString());
         }
 
-        if (remainingBanks.Length == 0)
+        int remainingCount = banks.Length - startIndex;
+        
+        if (remainingCount == 0)
         {
             throw new InvalidOperationException("Not enough banks to select from");
         }
 
-        if (remainingBanks.Length < n)
+        if (remainingCount < n)
         {
-            throw new InvalidOperationException("Not enough banks to select from for the remaining digits. Remaining: " + n + ", available: " + remainingBanks.Length + ". Banks: " + string.Join("", banks.Select(b => b.Power)));
+            throw new InvalidOperationException("Not enough banks to select from for the remaining digits. Remaining: " + n + ", available: " + remainingCount + ". Banks: " + string.Join("", banks.Select(b => b.Power)));
         }
 
-        var candidates = remainingBanks.Take(remainingBanks.Length - n + 1).ToArray();
-        Console.WriteLine("Candidates for position " + (selectedBanks.Count + 1) + ": " + string.Join("", candidates.Select(b => b.Power)));
+        int candidatesEnd = banks.Length - n + 1;
+        Console.WriteLine("Candidates for position " + (selectedBanks.Count + 1) + ": " + string.Join("", banks.Skip(startIndex).Take(candidatesEnd - startIndex).Select(b => b.Power)));
 
         // we need to find the largest digit that has enough digits after it
         // When there are multiple occurrences of the highest digit, pick the leftmost one
         Bank? highestBank = null;
 
-        for (int i = 0; i < candidates.Length; i++)
+        for (int i = startIndex; i < candidatesEnd; i++)
         {
-            if (highestBank is null || candidates[i].Power > highestBank.Value.Power)
+            if (highestBank is null || banks[i].Power > highestBank.Value.Power)
             {
-                highestBank = candidates[i];
+                highestBank = banks[i];
             }
         }
 
@@ -83,7 +85,7 @@ public sealed class DayThree : Problem<long>
         }
 
         selectedBanks.Add(highestBank.Value);
-        return GetLargetNDigitNumber(banks, [.. banks.Skip(highestBank.Value.Index + 1)], selectedBanks, n - 1);
+        return GetLargetNDigitNumber(banks, highestBank.Value.Index + 1, selectedBanks, n - 1);
     }
 
     internal static Bank[] ParseBanks(string line)
