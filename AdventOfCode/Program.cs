@@ -12,20 +12,19 @@ Dictionary<int, Type> problemsByDay = Assembly.GetExecutingAssembly()
 
 RootCommand rootCommand = new("Advent of Code Solver");
 
-Option<int> dayOption = new("Day", "--day", "-d")
+Argument<int> dayArgument = new("day")
 {
-    Required = true,
-    Description = "Day of the problem as a number (e.g., 1 for Day One)."
+    Description = "Day of the problem to solve (e.g., 1 for Day One)."
 };
 
-Option<int> partOption = new("Part", "--part", "-p")
+Option<int> partOption = new("part", "--part", "-p")
 {
     Required = false,
     DefaultValueFactory = _ => 1,
     Description = "Part of the problem to solve (1 or 2). Defaults to 1."
 };
 
-rootCommand.Options.Add(dayOption);
+rootCommand.Arguments.Add(dayArgument);
 rootCommand.Options.Add(partOption);
 
 rootCommand.SetAction(RunAsync);
@@ -34,7 +33,7 @@ await rootCommand.Parse(args).InvokeAsync();
 
 async Task RunAsync(ParseResult parseResult)
 {
-    int day = parseResult.GetRequiredValue(dayOption);
+    int day = parseResult.GetRequiredValue(dayArgument);
     int part = parseResult.GetValue(partOption);
 
     if (part is < 1 or > 2)
