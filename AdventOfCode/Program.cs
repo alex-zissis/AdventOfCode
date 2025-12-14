@@ -3,9 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using AdventOfCode;
 
-Type[] problemTypes = [.. Assembly.GetExecutingAssembly()
+Dictionary<int, Type> problemsByDay = Assembly.GetExecutingAssembly()
     .GetTypes()
-    .Where(type => !type.IsAbstract && IsProblemType(type))];
+    .Where(type => !type.IsAbstract && IsProblemType(type))
+    .Select(type => (Type: type, Attribute: type.GetCustomAttribute<DayAttribute>()))
+    .Where(tuple => tuple.Attribute is not null)
+    .ToDictionary(tuple => tuple.Attribute!.Day, tuple => tuple.Type);
 
 RootCommand rootCommand = new("Advent of Code Solver");
 
@@ -40,108 +43,41 @@ async Task RunAsync(ParseResult parseResult)
         return;
     }
 
-    if (!TryResolveProblem(day, out object? instance, out Type? problemType))
+    if (!TryResolveProblem(day, out IProblem? problem))
     {
-        return;
-    }
-
-    string methodName = part == 1 ? nameof(Problem<>.SolvePartOneAsync) : nameof(Problem<>.SolvePartTwoAsync);
-    MethodInfo? solver = problemType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-    if (solver is null)
-    {
-        Console.Error.WriteLine($"{methodName} not found on {problemType.Name}.");
         return;
     }
 
     IAsyncEnumerable<string?> lines = EmbeddedResourceReader.ReadAllLinesAsync($"Day_{day}.txt");
 
-    object? invocationResult = InvokeMethod(day, part, instance, problemType);
-    object? answer = await GetAnswer(invocationResult);
-   
+    object? answer = part == 1
+        ? await problem.SolvePartOneAsync(lines)
+        : await problem.SolvePartTwoAsync(lines);
+
     Console.WriteLine($"Day {day} part {part} answer: {answer}");
-    return;
 }
 
 /// <summary>
-/// Resolves the problem instance and type for the given day.
+/// Resolves the problem instance for the given day.
 /// </summary>
-bool TryResolveProblem(int day, [NotNullWhen(true)] out object? instance, [NotNullWhen(true)] out Type? problemType) {
-    instance = null;
-    problemType = null;
-    
-    foreach (Type type in problemTypes)
-    {
-        object? candidate = Activator.CreateInstance(type);
-        if (candidate is null)
-        {
-            continue;
-        }
+bool TryResolveProblem(int day, [NotNullWhen(true)] out IProblem? problem)
+{
+    problem = null;
 
-        PropertyInfo? dayProperty = type.GetProperty("Day");
-        if (dayProperty is null)
-        {
-            continue;
-        }
-
-        int candidateDay = (int?)dayProperty.GetValue(candidate) ?? throw new InvalidCastException("Day property is not an int.");
-        if (candidateDay == day)
-        {
-            instance = candidate;
-            problemType = type;
-            break;
-        }
-    }
-
-    if (instance is null || problemType is null)
+    if (!problemsByDay.TryGetValue(day, out Type? problemType))
     {
         Console.Error.WriteLine($"Problem for day {day} not found.");
         return false;
     }
 
+    if (Activator.CreateInstance(problemType) is not IProblem instance)
+    {
+        Console.Error.WriteLine($"Failed to create instance of {problemType.Name}.");
+        return false;
+    }
+
+    problem = instance;
     return true;
-}
-
-/// <summary>
-/// Invokes the appropriate method on the problem instance via reflection.
-/// </summary>
-object? InvokeMethod(int day, int part, object? instance, Type problemType)
-{
-    string methodName = part == 1 ? nameof(Problem<>.SolvePartOneAsync) : nameof(Problem<>.SolvePartTwoAsync);
-    MethodInfo? solver = problemType.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-    if (solver is null)
-    {
-        Console.Error.WriteLine($"{methodName} not found on {problemType.Name}.");
-        return null;
-    }
-
-    IAsyncEnumerable<string?> lines = EmbeddedResourceReader.ReadAllLinesAsync($"Day_{day}.txt");
-
-    object? invocationResult = solver.Invoke(instance, [lines]);
-    if (invocationResult is not Task task)
-    {
-        Console.Error.WriteLine($"{methodName} did not return a Task.");
-        return null;
-    }
-
-    return invocationResult;
-}
-
-/// <summary>
-/// Gets the result from an invoked method that returns a Task.
-/// </summary>
-async Task<object?> GetAnswer(object? invocationResult)
-{
-    if (invocationResult is not Task task)
-    {
-        Console.Error.WriteLine("Invocation did not return a Task.");
-        return null;
-    }
-
-    await task;
-    task.GetAwaiter().GetResult();
-    object? answer = invocationResult.GetType().GetProperty("Result")?.GetValue(invocationResult);
-
-    return answer;
 }
 
 static bool IsProblemType(Type? type)

@@ -2,10 +2,9 @@ using System.Text;
 
 namespace AdventOfCode.Problems;
 
+[Day(3)]
 public sealed class Day3 : Problem<long>
 {
-    public override int Day => 3;
-
     public override async Task<long> SolvePartOneAsync(IAsyncEnumerable<string?> lines)
     {
         return await SolveAsync(lines, 2);

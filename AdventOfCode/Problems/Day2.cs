@@ -2,10 +2,9 @@ using AdventOfCode.Utility;
 
 namespace AdventOfCode.Problems;
 
+[Day(2)]
 public class Day2 : Problem<long>
 {
-    public override int Day => 2;
-
     public override async Task<long> SolvePartOneAsync(IAsyncEnumerable<string?> lines)
     {
         string line = await lines.GetSingleLineAsync();

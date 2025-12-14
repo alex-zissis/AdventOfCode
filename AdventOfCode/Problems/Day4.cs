@@ -1,9 +1,8 @@
 namespace AdventOfCode.Problems;
 
+[Day(4)]
 public sealed class Day4 : Problem<int>
 {
-    public override int Day => 4;
-
     public override async Task<int> SolvePartOneAsync(IAsyncEnumerable<string?> lines)
     {
         int candidate = 0;
