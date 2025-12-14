@@ -2,7 +2,7 @@ using AdventOfCode.Utility;
 
 namespace AdventOfCode.Problems;
 
-public class DayTwo : Problem<long>
+public class Day2 : Problem<long>
 {
     public override int Day => 2;
 

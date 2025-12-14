@@ -2,14 +2,14 @@ using AdventOfCode.Problems;
 
 namespace AdventOfCode.Tests.Problems;
 
-public class DayTwoTests
+public class Day2Tests
 {
-    private readonly DayTwo _dayTwo = new();
+    private readonly Day2 _dayTwo = new();
 
     [Theory]
     [InlineData(true, 1227775554)]
     [InlineData(false, 4174379265)]
-    public async Task DayTwo_SampleInput_ReturnsExpectedResult(bool partOne, long expectedAnswer)
+    public async Task Day2_SampleInput_ReturnsExpectedResult(bool partOne, long expectedAnswer)
     {
         const string sampleInput = """
                                    11-22,95-115,998-1012,1188511880-1188511890,222220-222224,

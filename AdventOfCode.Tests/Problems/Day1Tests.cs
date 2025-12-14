@@ -2,14 +2,14 @@
 
 namespace AdventOfCode.Tests.Problems;
 
-public class DayOneTests
+public class Day1Tests
 {
-    private readonly DayOne _solver = new();
+    private readonly Day1 _solver = new();
 
     [Theory]
     [InlineData(true, 3)]
     [InlineData(false, 6)]
-    public async Task DayOne_PartOne_WhenGivenSampleInput_ReturnsCorrectResult(bool partOne, int expectedAnswer)
+    public async Task Day1_PartOne_WhenGivenSampleInput_ReturnsCorrectResult(bool partOne, int expectedAnswer)
     {
         const string sampleInput = """
         L68
@@ -34,7 +34,7 @@ public class DayOneTests
     [Theory]
     [InlineData("L50\nR50")]
     [InlineData("R50\nL50")]
-    public async Task DayOne_PartOne_WhenGivenLoopbackValues_ReturnsCorrectResult(string input)
+    public async Task Day1_PartOne_WhenGivenLoopbackValues_ReturnsCorrectResult(string input)
     {
         int answer = await _solver.SolvePartOneAsync(input.TextToAsyncLines());
 
@@ -43,7 +43,7 @@ public class DayOneTests
 
     [Theory]
     [InlineData("L500")]
-    public async Task DayOne_PartTwo_WhenPassingZeroMultipleTimes_GivesCorrectValue(string input)
+    public async Task Day1_PartTwo_WhenPassingZeroMultipleTimes_GivesCorrectValue(string input)
     {
         int answer = await _solver.SolvePartTwoAsync(input.TextToAsyncLines());
 

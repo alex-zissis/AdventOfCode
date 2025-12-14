@@ -1,6 +1,6 @@
 namespace AdventOfCode.Problems;
 
-public class DayOne : Problem<int>
+public class Day1 : Problem<int>
 {
     public override int Day => 1;
 

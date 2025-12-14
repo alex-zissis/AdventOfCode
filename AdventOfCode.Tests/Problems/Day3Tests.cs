@@ -3,9 +3,9 @@ using AdventOfCode.Problems;
 
 namespace AdventOfCode.Tests.Problems;
 
-public sealed class DayThreeTests
+public sealed class Day3Tests
 {
-    private readonly DayThree _solver = new();
+    private readonly Day3 _solver = new();
 
     private const string SampleInput = """
         987654321111111
@@ -15,7 +15,7 @@ public sealed class DayThreeTests
         """;
 
     [Fact]
-    public async Task DayThree_PartOne_WhenGivenSampleInput_ReturnsCorrectResult()
+    public async Task Day3_PartOne_WhenGivenSampleInput_ReturnsCorrectResult()
     {
         // Act
         long result = await _solver.SolvePartOneAsync(SampleInput.TextToAsyncLines());
@@ -25,7 +25,7 @@ public sealed class DayThreeTests
     }
 
     [Fact]
-    public async Task DayThree_PartTwo_WhenGivenSampleInput_ReturnsCorrectResult()
+    public async Task Day3_PartTwo_WhenGivenSampleInput_ReturnsCorrectResult()
     {
         // Act
         long result = await _solver.SolvePartTwoAsync(SampleInput.TextToAsyncLines());
@@ -39,11 +39,11 @@ public sealed class DayThreeTests
     [InlineData("811111111111119", 811111111119)]
     [InlineData("234234234234278", 434234234278)]
     [InlineData("818181911112111", 888911112111)]
-    public void DayThree_GetLargetNDigitNumber_WhenGivenLine_ReturnsExpectedResult(string line, long expected)
+    public void Day3_GetLargetNDigitNumber_WhenGivenLine_ReturnsExpectedResult(string line, long expected)
     {
-        DayThree.Bank[] banks = DayThree.ParseBanks(line);
+        Day3.Bank[] banks = Day3.ParseBanks(line);
 
-        long result = DayThree.GetLargetNDigitNumber(banks, 0, [], 12);
+        long result = Day3.GetLargetNDigitNumber(banks, 0, [], 12);
 
         Assert.Equal(expected, result);
     }

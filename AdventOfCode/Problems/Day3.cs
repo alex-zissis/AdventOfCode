@@ -2,7 +2,7 @@ using System.Text;
 
 namespace AdventOfCode.Problems;
 
-public sealed class DayThree : Problem<long>
+public sealed class Day3 : Problem<long>
 {
     public override int Day => 3;
 
